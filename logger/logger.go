@@ -1,4 +1,4 @@
-package prober
+package logger
 
 type Logger struct {
 	RealtimeSubject string
