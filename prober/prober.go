@@ -8,7 +8,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/aurora-is-near/nats-rpc-prober/transport"
+	"github.com/aurora-is-near/nats-prober/transport"
 	"github.com/nats-io/nats.go"
 )
 

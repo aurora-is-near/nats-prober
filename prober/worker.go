@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aurora-is-near/nats-rpc-prober/linkedmap"
+	"github.com/aurora-is-near/nats-prober/linkedmap"
 )
 
 type Worker struct {

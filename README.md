@@ -1,3 +1,3 @@
-# NATS RPC Prober
+# NATS Prober
 
-See spec: https://docs.google.com/document/d/1pv4y3RPwwAld9bA7QeobMnCDrwg_POYplZMgu1zX0Pc/edit#
+Base NATS prober that listens to given subjects and matches requests to responses

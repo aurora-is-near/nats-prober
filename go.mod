@@ -1,4 +1,4 @@
-module github.com/aurora-is-near/nats-rpc-prober
+module github.com/aurora-is-near/nats-prober
 
 go 1.18
 
