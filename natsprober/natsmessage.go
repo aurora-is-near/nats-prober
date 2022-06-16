@@ -11,7 +11,7 @@ type NatsMessage struct {
 	ReceivedAt time.Time
 }
 
-func NewMessage(msg *nats.Msg) *NatsMessage {
+func newNatsMessage(msg *nats.Msg) *NatsMessage {
 	return &NatsMessage{
 		Msg:        msg,
 		ReceivedAt: time.Now(),

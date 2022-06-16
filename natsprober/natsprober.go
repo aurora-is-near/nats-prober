@@ -95,14 +95,14 @@ func (prober *NatsProber) Stop() error {
 func (prober *NatsProber) handleRequest(request *nats.Msg) {
 	prober.handlersWg.Add(1)
 	defer prober.handlersWg.Done()
-	message := NewMessage(request)
+	message := newNatsMessage(request)
 	prober.getWorker(request.Reply).addRequest(message)
 }
 
 func (prober *NatsProber) handleResponse(response *nats.Msg) {
 	prober.handlersWg.Add(1)
 	defer prober.handlersWg.Done()
-	message := NewMessage(response)
+	message := newNatsMessage(response)
 	prober.getWorker(response.Subject).addResponse(message)
 }
 
