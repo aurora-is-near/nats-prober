@@ -1,6 +1,6 @@
-package orderedmap
+package linkedmap
 
-type OrderedMap[K comparable, V any] struct {
+type LinkedMap[K comparable, V any] struct {
 	elements map[K]*item[K, V]
 	first    *item[K, V]
 	last     *item[K, V]
@@ -13,38 +13,38 @@ type item[K comparable, V any] struct {
 	next  *item[K, V]
 }
 
-func New[K comparable, V any]() *OrderedMap[K, V] {
-	return &OrderedMap[K, V]{
+func New[K comparable, V any]() *LinkedMap[K, V] {
+	return &LinkedMap[K, V]{
 		elements: make(map[K]*item[K, V]),
 	}
 }
 
-func (m *OrderedMap[K, V]) Len() int {
+func (m *LinkedMap[K, V]) Len() int {
 	return len(m.elements)
 }
 
-func (m *OrderedMap[K, V]) Get(key K) (V, bool) {
+func (m *LinkedMap[K, V]) Get(key K) (V, bool) {
 	if item, ok := m.elements[key]; ok {
 		return item.value, true
 	}
 	return *new(V), false
 }
 
-func (m *OrderedMap[K, V]) GetFirst() (V, bool) {
+func (m *LinkedMap[K, V]) GetFirst() (V, bool) {
 	if m.first == nil {
 		return *new(V), false
 	}
 	return m.first.value, true
 }
 
-func (m *OrderedMap[K, V]) GetLast() (V, bool) {
+func (m *LinkedMap[K, V]) GetLast() (V, bool) {
 	if m.last == nil {
 		return *new(V), false
 	}
 	return m.last.value, true
 }
 
-func (m *OrderedMap[K, V]) Pop(key K) (V, bool) {
+func (m *LinkedMap[K, V]) Pop(key K) (V, bool) {
 	item, ok := m.elements[key]
 	if !ok {
 		return *new(V), false
@@ -66,21 +66,21 @@ func (m *OrderedMap[K, V]) Pop(key K) (V, bool) {
 	return item.value, true
 }
 
-func (m *OrderedMap[K, V]) PopFirst() (V, bool) {
+func (m *LinkedMap[K, V]) PopFirst() (V, bool) {
 	if m.first == nil {
 		return *new(V), false
 	}
 	return m.Pop(m.first.key)
 }
 
-func (m *OrderedMap[K, V]) PopLast() (V, bool) {
+func (m *LinkedMap[K, V]) PopLast() (V, bool) {
 	if m.last == nil {
 		return *new(V), false
 	}
 	return m.Pop(m.last.key)
 }
 
-func (m *OrderedMap[K, V]) PushFirst(key K, value V) {
+func (m *LinkedMap[K, V]) PushFirst(key K, value V) {
 	m.Pop(key)
 
 	item := &item[K, V]{
@@ -96,7 +96,7 @@ func (m *OrderedMap[K, V]) PushFirst(key K, value V) {
 	m.elements[key] = item
 }
 
-func (m *OrderedMap[K, V]) PushLast(key K, value V) {
+func (m *LinkedMap[K, V]) PushLast(key K, value V) {
 	m.Pop(key)
 
 	item := &item[K, V]{

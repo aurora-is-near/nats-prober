@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aurora-is-near/nats-rpc-prober/orderedmap"
+	"github.com/aurora-is-near/nats-rpc-prober/linkedmap"
 )
 
 type Worker struct {
@@ -15,7 +15,7 @@ type Worker struct {
 	stop      chan bool
 	wg        sync.WaitGroup
 
-	requestsQueue *orderedmap.OrderedMap[string, *NatsMessage]
+	requestsQueue *linkedmap.LinkedMap[string, *NatsMessage]
 }
 
 func StartWorker(prober *Prober) *Worker {
@@ -24,7 +24,7 @@ func StartWorker(prober *Prober) *Worker {
 		requests:      make(chan *NatsMessage, 100),
 		responses:     make(chan *NatsMessage, 100),
 		stop:          make(chan bool),
-		requestsQueue: orderedmap.New[string, *NatsMessage](),
+		requestsQueue: linkedmap.New[string, *NatsMessage](),
 	}
 
 	worker.wg.Add(1)
