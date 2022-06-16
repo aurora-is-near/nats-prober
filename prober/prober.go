@@ -19,7 +19,6 @@ type Prober struct {
 	RequestTimeoutSeconds    uint
 	WorkersCount             uint
 	WorkerMaxPendingRequests uint
-	Logger                   Logger
 
 	handlersWg sync.WaitGroup
 	workers    []*Worker
