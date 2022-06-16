@@ -20,8 +20,29 @@ type Prober struct {
 	WorkersCount             uint
 	WorkerMaxPendingRequests uint
 
+	successfulResponseHandler func(request *NatsMessage, response *NatsMessage)
+	timeoutedRequestHandler   func(request *NatsMessage)
+	unknownResponseHandler    func(response *NatsMessage)
+	droppedRequestHandler     func(request *NatsMessage)
+
 	handlersWg sync.WaitGroup
 	workers    []*Worker
+}
+
+func (prober *Prober) SetSuccessfulResponseHandler(handler func(request *NatsMessage, response *NatsMessage)) {
+	prober.successfulResponseHandler = handler
+}
+
+func (prober *Prober) SetTimeoutedRequestHandler(handler func(request *NatsMessage)) {
+	prober.timeoutedRequestHandler = handler
+}
+
+func (prober *Prober) SetUnknownResponseHandler(handler func(response *NatsMessage)) {
+	prober.unknownResponseHandler = handler
+}
+
+func (prober *Prober) SetDroppedRequestHandler(handler func(request *NatsMessage)) {
+	prober.droppedRequestHandler = handler
 }
 
 func (prober *Prober) Run() error {

@@ -90,14 +90,18 @@ func (worker *Worker) checkTimeouts() {
 		}
 		worker.pendingRequests.PopFirst()
 
-		worker.recordTimeoutedRequest(oldest)
+		if worker.prober.timeoutedRequestHandler != nil {
+			worker.prober.timeoutedRequestHandler(oldest)
+		}
 	}
 }
 
 func (worker *Worker) handleRequest(request *NatsMessage) {
 	if worker.pendingRequests.Len() == int(worker.prober.WorkerMaxPendingRequests) {
 		droppedRequest, _ := worker.pendingRequests.PopFirst()
-		worker.recordDroppedRequest(droppedRequest)
+		if worker.prober.droppedRequestHandler != nil {
+			worker.prober.droppedRequestHandler(droppedRequest)
+		}
 	}
 	worker.pendingRequests.PushLast(request.Msg.Reply, request)
 }
@@ -105,24 +109,12 @@ func (worker *Worker) handleRequest(request *NatsMessage) {
 func (worker *Worker) handleResponse(response *NatsMessage) {
 	request, ok := worker.pendingRequests.Get(response.Msg.Subject)
 	if !ok {
-		worker.recordUnknownResponse(response)
+		if worker.prober.unknownResponseHandler != nil {
+			worker.prober.unknownResponseHandler(response)
+		}
 		return
 	}
-	worker.recordSuccessfulResponse(request, response)
-}
-
-func (worker *Worker) recordTimeoutedRequest(request *NatsMessage) {
-	// TODO
-}
-
-func (worker *Worker) recordDroppedRequest(request *NatsMessage) {
-	// TODO
-}
-
-func (worker *Worker) recordUnknownResponse(response *NatsMessage) {
-	// TODO
-}
-
-func (worker *Worker) recordSuccessfulResponse(request *NatsMessage, response *NatsMessage) {
-	// TODO
+	if worker.prober.successfulResponseHandler != nil {
+		worker.prober.successfulResponseHandler(request, response)
+	}
 }
