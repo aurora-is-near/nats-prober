@@ -1,4 +1,4 @@
-package prober
+package natsprober
 
 import (
 	"time"
