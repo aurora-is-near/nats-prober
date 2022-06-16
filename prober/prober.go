@@ -13,13 +13,13 @@ import (
 )
 
 type Prober struct {
-	Nats                  *transport.NatsConnection
-	RequestSubjects       []string
-	ResponseSubjects      []string
-	RequestTimeoutSeconds uint
-	WorkersCount          uint
-	WorkerMaxQueueSize    uint
-	Logger                Logger
+	Nats                     *transport.NatsConnection
+	RequestSubjects          []string
+	ResponseSubjects         []string
+	RequestTimeoutSeconds    uint
+	WorkersCount             uint
+	WorkerMaxPendingRequests uint
+	Logger                   Logger
 
 	handlersWg sync.WaitGroup
 	workers    []*Worker

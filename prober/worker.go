@@ -15,16 +15,16 @@ type Worker struct {
 	stop      chan bool
 	wg        sync.WaitGroup
 
-	requestsQueue *linkedmap.LinkedMap[string, *NatsMessage]
+	pendingRequests *linkedmap.LinkedMap[string, *NatsMessage]
 }
 
 func StartWorker(prober *Prober) *Worker {
 	worker := &Worker{
-		prober:        prober,
-		requests:      make(chan *NatsMessage, 100),
-		responses:     make(chan *NatsMessage, 100),
-		stop:          make(chan bool),
-		requestsQueue: linkedmap.New[string, *NatsMessage](),
+		prober:          prober,
+		requests:        make(chan *NatsMessage, 100),
+		responses:       make(chan *NatsMessage, 100),
+		stop:            make(chan bool),
+		pendingRequests: linkedmap.New[string, *NatsMessage](),
 	}
 
 	worker.wg.Add(1)
@@ -81,29 +81,29 @@ func (worker *Worker) run() {
 
 func (worker *Worker) checkTimeouts() {
 	for {
-		oldest, ok := worker.requestsQueue.GetFirst()
+		oldest, ok := worker.pendingRequests.GetFirst()
 		if !ok {
 			return
 		}
 		if time.Since(oldest.ReceivedAt) < time.Duration(worker.prober.RequestTimeoutSeconds)*time.Second {
 			return
 		}
-		worker.requestsQueue.PopFirst()
+		worker.pendingRequests.PopFirst()
 
 		worker.recordTimeoutedRequest(oldest)
 	}
 }
 
 func (worker *Worker) handleRequest(request *NatsMessage) {
-	if worker.requestsQueue.Len() == int(worker.prober.WorkerMaxQueueSize) {
-		droppedRequest, _ := worker.requestsQueue.PopFirst()
+	if worker.pendingRequests.Len() == int(worker.prober.WorkerMaxPendingRequests) {
+		droppedRequest, _ := worker.pendingRequests.PopFirst()
 		worker.recordDroppedRequest(droppedRequest)
 	}
-	worker.requestsQueue.PushLast(request.Msg.Reply, request)
+	worker.pendingRequests.PushLast(request.Msg.Reply, request)
 }
 
 func (worker *Worker) handleResponse(response *NatsMessage) {
-	request, ok := worker.requestsQueue.Get(response.Msg.Subject)
+	request, ok := worker.pendingRequests.Get(response.Msg.Subject)
 	if !ok {
 		worker.recordUnknownResponse(response)
 		return
