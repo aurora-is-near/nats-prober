@@ -98,7 +98,7 @@ func (batcher *Batcher) Add(d []byte) {
 		return
 	}
 	batcher.flush()
-	_ = batcher.currentBatch.Add(d[:min(batcher.maxSize, len(d)-1)])
+	_ = batcher.currentBatch.Add(d[:min(batcher.maxSize, len(d))])
 }
 
 func (batcher *Batcher) flush() {
