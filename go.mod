@@ -2,7 +2,11 @@ module github.com/aurora-is-near/nats-prober
 
 go 1.18
 
-require github.com/nats-io/nats.go v1.15.0
+require (
+	github.com/davecgh/go-spew v1.1.1
+	github.com/edsrzf/mmap-go v1.1.0
+	github.com/nats-io/nats.go v1.15.0
+)
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
