@@ -88,7 +88,9 @@ func (m *LinkedMap[K, V]) PushFirst(key K, value V) {
 		value: value,
 		next:  m.first,
 	}
-	if m.first != nil {
+	if m.first == nil {
+		m.last = item
+	} else {
 		m.first.prev = item
 	}
 	m.first = item
@@ -104,7 +106,9 @@ func (m *LinkedMap[K, V]) PushLast(key K, value V) {
 		value: value,
 		prev:  m.last,
 	}
-	if m.last != nil {
+	if m.last == nil {
+		m.first = item
+	} else {
 		m.last.next = item
 	}
 	m.last = item
