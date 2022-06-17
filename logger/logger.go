@@ -132,7 +132,9 @@ func (logger *Logger) handleBatch(data []byte) {
 	logger.batcherHandlerWg.Add(1)
 	defer logger.batcherHandlerWg.Done()
 
-	logger.delayQueue.AddMsg(data)
+	if logger.delayQueue != nil {
+		logger.delayQueue.AddMsg(data)
+	}
 
 	if err := logger.natsConn.Publish(logger.RealtimeSubject, data); err != nil {
 		log.Printf("Logger: can't publish realtime data: %v", err)
