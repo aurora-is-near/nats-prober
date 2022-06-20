@@ -107,7 +107,7 @@ func (w *worker) handleRequest(request *NatsMessage) {
 }
 
 func (w *worker) handleResponse(response *NatsMessage) {
-	request, ok := w.pendingRequests.Get(response.Msg.Subject)
+	request, ok := w.pendingRequests.Pop(response.Msg.Subject)
 	if !ok {
 		if w.prober.unknownResponseHandler != nil {
 			w.prober.unknownResponseHandler(response)
