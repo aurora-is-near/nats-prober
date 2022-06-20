@@ -20,6 +20,7 @@ type NatsProber struct {
 	unknownResponseHandler    func(response *NatsMessage)
 	droppedRequestHandler     func(request *NatsMessage)
 
+	mapHashSeed   maphash.Seed
 	workers       []*worker
 	subscriptions []*nats.Subscription
 	handlersWg    sync.WaitGroup
@@ -42,6 +43,8 @@ func (prober *NatsProber) SetDroppedRequestHandler(handler func(request *NatsMes
 }
 
 func (prober *NatsProber) Start(nc *nats.Conn) error {
+	prober.mapHashSeed = maphash.MakeSeed()
+
 	log.Printf("NatsProber: starting workers...")
 	for i := 0; i < int(prober.WorkersCount); i++ {
 		prober.workers = append(prober.workers, startWorker(prober))
@@ -108,6 +111,7 @@ func (prober *NatsProber) handleResponse(response *nats.Msg) {
 
 func (prober *NatsProber) getWorker(replySubject string) *worker {
 	var hash maphash.Hash
+	hash.SetSeed(prober.mapHashSeed)
 	hash.WriteString(replySubject)
 	index := int(hash.Sum64() % uint64(prober.WorkersCount))
 	return prober.workers[index]
