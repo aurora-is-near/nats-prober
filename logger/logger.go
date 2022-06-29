@@ -95,11 +95,11 @@ func (logger *Logger) Stop() {
 	}
 }
 
-func (logger *Logger) AddLogLine(data []byte) {
+func (logger *Logger) AddLogLine(data []byte, subjectSuffix string) {
 	if logger.batcher != nil {
 		logger.batcher.Add(data)
 	} else {
-		logger.handleBatch(data)
+		logger.handleLogLine(data, subjectSuffix)
 	}
 }
 
@@ -132,11 +132,15 @@ func (logger *Logger) handleBatch(data []byte) {
 	logger.batcherHandlerWg.Add(1)
 	defer logger.batcherHandlerWg.Done()
 
+	logger.handleLogLine(data, "")
+}
+
+func (logger *Logger) handleLogLine(data []byte, subjectSuffix string) {
 	if logger.delayQueue != nil {
 		logger.delayQueue.AddMsg(data)
 	}
 
-	if err := logger.natsConn.Publish(logger.RealtimeSubject, data); err != nil {
+	if err := logger.natsConn.Publish(logger.RealtimeSubject+subjectSuffix, data); err != nil {
 		log.Printf("Logger: can't publish realtime data: %v", err)
 	}
 }
